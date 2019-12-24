@@ -49,7 +49,6 @@ for _ in range(num_episodes):
     start_state, start_action = state_action[np.random.choice(len(states) * len(actions))]
     # Generate episode from start_state, start_action
     env.reset(start_state)
-    env.state = np.array(start_state)
     experience, experience_count = [], {(start_state, start_action):1}
     observation, reward, done, info = env.step(start_action)
     print("state:",start_state, "action:", start_action, "next_state:",observation)
