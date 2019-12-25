@@ -5,6 +5,7 @@ import numpy as np
 # env = gym.make('maze-sample-3x3-v0')
 maze_width, maze_height = 5, 5
 env = MazeEnv(maze_size=(maze_width, maze_height))
+# env = MazeEnvSample5x5()
 
 def average(arr):
     return sum(arr)/len(arr)
@@ -43,28 +44,27 @@ policy = initialize_policy(env, states)
 Q = initialize_averages(states, actions)
 returns = initialize_returns(states, actions)
 
-num_episodes, gamma = 900, 1
+num_episodes, gamma = 500, 1
 
 for _ in range(num_episodes):
     start_state, start_action = state_action[np.random.choice(len(states) * len(actions))]
     # Generate episode from start_state, start_action
     env.reset(start_state)
-    env.state = np.array(start_state)
     experience, experience_count = [], {(start_state, start_action):1}
     observation, reward, done, info = env.step(start_action)
-    print("state:",start_state, "action:", start_action, "next_state:",observation)
+    # print("state:",start_state, "action:", start_action, "next_state:",observation)
     experience.append((start_state, start_action, reward))
     # If we're starting the policy arbitrarily, what guarantees that we'll reach the goals
     while not done:
         observation = tuple(observation)
-        # action = policy[observation]
+        #action = policy[observation]
         action = env.action_space.sample()
         next_observation, reward, done, info = env.step(action)
-        print("state:",observation, "action:", action, "next_state:", next_observation)
+        # print("state:",observation, "action:", action, "next_state:", next_observation)
         experience.append((observation, action, reward))
         experience_count = update_count(experience_count, observation, action)
         observation = next_observation
-    print(experience)
+    # print(experience)
 
     g = 0
 
@@ -81,7 +81,6 @@ for _ in range(num_episodes):
             action, value = max(Q[state].items(), key = lambda pair: pair[1])
             policy[state] = action
 
-
 for i_episode in range(200):
     observation = env.reset()
     for t in range(100):
@@ -89,6 +88,7 @@ for i_episode in range(200):
         print(observation)
         # action = env.action_space.sample()
         action = policy[tuple(observation)]
+        print(action)
         observation, reward, done, info = env.step(action)
         if done:
             print("Episode finished after {} timesteps".format(t+1))
