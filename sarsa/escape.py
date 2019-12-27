@@ -28,6 +28,7 @@ def initialize(env, state):
     if is_terminal_state(env, state):
         return 0
     return random.random()
+    # return 0
 
 # How to best initialize values?
 def initialize_action_values(env, states, actions):
@@ -50,14 +51,17 @@ def epsilon_greedy_action(Q, state, epsilon):
     distribution = [1 - epsilon if val is greedy_value else epsilon/(num_actions-1) for action,val in action_to_values]
     # pick random action with epsilon-determined distribution
     actions = [action for action, value in action_to_values]
-    return int(np.random.choice(actions, 1, distribution)[0])
+    # print('state:', state, 'action_to_values:', action_to_values, 'distribution:', distribution)
+    action = random.choices(actions,distribution)[0]
+    # print('action', action)
+    return action
 
 
 # Qns: guide to picking step_size value
 def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.999, epsilon=0.8):
     # Initialize S (for now, always start from (0,0))
     Q = initialize_action_values(env, states, actions)
-
+    # print('initial Q: ',Q)
     # Learning
     for _ in range(num_episodes):
         current_obs = env.reset()
@@ -69,11 +73,14 @@ def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.9
             next_obs = tuple(next_obs)
             next_action = epsilon_greedy_action(Q, next_obs, epsilon)
             Q[current_obs][current_action] += step_size*(reward + gamma*Q[next_obs][next_action] - Q[current_obs][current_action])
+            current_obs = next_obs
             current_action = next_action
+        print("Training episode ", _, " complete")
 
-    print(Q)
     # Defining optimal policy
     optimal_policy = {state: max(Q[state].items(), key=lambda pair: pair[1])[0] for state in Q}
+    # print('Q:',Q)
+    # print('optimal policy:', optimal_policy)
     return optimal_policy
 
 if __name__ == '__main__':
@@ -84,7 +91,7 @@ if __name__ == '__main__':
         observation = env.reset()
         for t in range(100):
             env.render()
-            print(observation)
+            # print(observation)
             action = policy[tuple(observation)]
             observation, reward, done, info = env.step(action)
             if done:
