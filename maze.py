@@ -51,7 +51,7 @@ for _ in range(num_episodes):
     env.reset(start_state)
     experience, experience_count = [], {(start_state, start_action):1}
     observation, reward, done, info = env.step(start_action)
-    print("state:",start_state, "action:", start_action, "next_state:",observation)
+    # print("state:",start_state, "action:", start_action, "next_state:",observation)
     experience.append((start_state, start_action, reward))
     # If we're starting the policy arbitrarily, what guarantees that we'll reach the goals
     while not done:
@@ -59,11 +59,11 @@ for _ in range(num_episodes):
         # action = policy[observation]
         action = env.action_space.sample()
         next_observation, reward, done, info = env.step(action)
-        print("state:",observation, "action:", action, "next_state:", next_observation)
+        # print("state:",observation, "action:", action, "next_state:", next_observation)
         experience.append((observation, action, reward))
         experience_count = update_count(experience_count, observation, action)
         observation = next_observation
-    print(experience)
+    # print(experience)
 
     g = 0
 
