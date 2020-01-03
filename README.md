@@ -5,13 +5,12 @@ This is a learning project dedicated to applying both model-based and model-free
 # Getting Started
 
 
-# Prerequisites
-There are only two main library requirements: numpy & gym
-For instructions about installing both:
+# Requirements
+* [numpy](https://www.scipy.org/install.html#pip-install) - Computation toolkit
+* [gym](https://gym.openai.com/docs/#installation) - Environment toolkit
 
-This environment is built using OpenAI's gym library.
 
-Organization of repository:
+# Organization of repository:
 
 # Acknowledgments
-- The environment used as the test-bed for those techniques was developed by MattChanTK.
+- The environment used as the test-bed for those techniques was developed by MattChanTK.  
