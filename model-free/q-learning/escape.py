@@ -6,7 +6,7 @@ from gym_maze.envs.maze_env import *
 import numpy as np
 
 random.seed(1)
-maze_width, maze_height = 3, 3
+maze_width, maze_height = 10, 10
 env = MazeEnv(maze_size=(maze_width, maze_height))
 
 def all_states(width, height):
@@ -25,10 +25,10 @@ def is_terminal_state(env, state):
     return done
 
 def initialize(env, state):
-    if is_terminal_state(env, state):
-        return 0
-    return random.random()
-    # return 0
+    # if is_terminal_state(env, state):
+    #     return 0
+    # return random.random()
+    return 0
 
 # How to best initialize values?
 def initialize_action_values(env, states, actions):
@@ -58,7 +58,7 @@ def epsilon_greedy_action(Q, state, epsilon):
 
 
 # Qns: guide to picking step_size value
-def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.999, epsilon=0.8):
+def q_learn(env, states, actions, num_episodes=80, step_size=0.1, gamma=0.999, epsilon=0.05):
     # Initialize S (for now, always start from (0,0))
     Q = initialize_action_values(env, states, actions)
     # print('initial Q: ',Q)
@@ -66,15 +66,15 @@ def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.9
     for _ in range(num_episodes):
         current_obs = env.reset()
         current_obs = tuple(current_obs)
-        current_action = epsilon_greedy_action(Q, current_obs, epsilon)
         done = False
         while not done:
+            env.render()
+            current_action = epsilon_greedy_action(Q, current_obs, epsilon)
             next_obs, reward, done, info = env.step(current_action)
             next_obs = tuple(next_obs)
-            next_action = epsilon_greedy_action(Q, next_obs, epsilon)
-            Q[current_obs][current_action] += step_size*(reward + gamma*Q[next_obs][next_action] - Q[current_obs][current_action])
+            next_action, next_value = max(Q[next_obs].items(), key = lambda pair:pair[1])
+            Q[current_obs][current_action] += step_size*(reward + gamma*next_value - Q[current_obs][current_action])
             current_obs = next_obs
-            current_action = next_action
         print("Training episode ", _, " complete")
 
     # Defining optimal policy
@@ -85,7 +85,7 @@ def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.9
 
 if __name__ == '__main__':
     states, actions = all_states(maze_width, maze_height), all_actions()
-    policy = using_sarsa(env, states, actions)
+    policy = q_learn(env, states, actions)
     test_trials = 200
     for i_episode in range(test_trials):
         observation = env.reset()
