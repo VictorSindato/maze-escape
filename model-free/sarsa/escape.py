@@ -6,7 +6,7 @@ from gym_maze.envs.maze_env import *
 import numpy as np
 
 random.seed(1)
-maze_width, maze_height = 3, 3
+maze_width, maze_height = 10, 10
 env = MazeEnv(maze_size=(maze_width, maze_height))
 
 def all_states(width, height):
@@ -25,12 +25,12 @@ def is_terminal_state(env, state):
     return done
 
 def initialize(env, state):
-    if is_terminal_state(env, state):
-        return 0
-    return random.random()
-    # return 0
+    # if is_terminal_state(env, state):
+    #     return 0
+    # return random.random()
+    return 0
 
-# How to best initialize values?
+# How to best initialize values? Better to initialize all values to 0
 def initialize_action_values(env, states, actions):
     state_action_pairs = get_state_action_pairs(states, actions)
     Q = {}
@@ -58,7 +58,7 @@ def epsilon_greedy_action(Q, state, epsilon):
 
 
 # Qns: guide to picking step_size value
-def using_sarsa(env, states, actions, num_episodes=500, step_size=0.5, gamma=0.999, epsilon=0.8):
+def using_sarsa(env, states, actions, num_episodes=800, step_size=0.5, gamma=0.999, epsilon=0.3):
     # Initialize S (for now, always start from (0,0))
     Q = initialize_action_values(env, states, actions)
     # print('initial Q: ',Q)
@@ -89,7 +89,9 @@ if __name__ == '__main__':
     test_trials = 200
     for i_episode in range(test_trials):
         observation = env.reset()
-        for t in range(100):
+        done = False
+        t = 0
+        while not done:
             env.render()
             # print(observation)
             action = policy[tuple(observation)]
@@ -97,4 +99,5 @@ if __name__ == '__main__':
             if done:
                 print("Episode finished after {} timesteps".format(t+1))
                 break
+            t += 1
     env.close()
