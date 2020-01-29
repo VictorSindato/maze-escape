@@ -50,10 +50,7 @@ def epsilon_greedy_action(Q, state, epsilon):
     greedy_action, greedy_value = action_to_values[0]
     distribution = [1 - epsilon if val is greedy_value else epsilon/(num_actions-1) for action,val in action_to_values]
     actions = [action for action, value in action_to_values]
-    # pick random action with epsilon-determined distribution
-    action = random.choices(actions,distribution)[0]
-    # print('action', action)
-    return action
+    return random.choices(actions,distribution)[0]
 
 
 # Qns: guide to picking step_size value
