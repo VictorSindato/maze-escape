@@ -49,9 +49,8 @@ def epsilon_greedy_action(Q, state, epsilon):
     action_to_values = sorted(Q[state].items(), key = lambda pair:pair[1], reverse=True)
     greedy_action, greedy_value = action_to_values[0]
     distribution = [1 - epsilon if val is greedy_value else epsilon/(num_actions-1) for action,val in action_to_values]
-    # pick random action with epsilon-determined distribution
     actions = [action for action, value in action_to_values]
-    # print('state:', state, 'action_to_values:', action_to_values, 'distribution:', distribution)
+    # pick random action with epsilon-determined distribution
     action = random.choices(actions,distribution)[0]
     # print('action', action)
     return action
