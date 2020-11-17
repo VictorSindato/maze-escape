@@ -1,13 +1,13 @@
 import sys
-sys.path.append('../../')
 import random
 import gym
 from gym_maze.envs.maze_env import *
 import numpy as np
+from time import time
 
 random.seed(1)
-maze_width, maze_height = 10, 10
-env = MazeEnv(maze_size=(maze_width, maze_height))
+maze_width, maze_height = 5, 5
+env = MazeEnv(maze_size=(maze_width, maze_height), mode=None)
 
 def all_states(width, height):
     return [(x,y) for x in range(width) for y in range(height)]
@@ -25,9 +25,6 @@ def is_terminal_state(env, state):
     return done
 
 def initialize(env, state):
-    # if is_terminal_state(env, state):
-    #     return 0
-    # return random.random()
     return 0
 
 # How to best initialize values?
@@ -61,9 +58,10 @@ def epsilon_greedy_action(Q, state, epsilon):
 def q_learn(env, states, actions, num_episodes=80, step_size=0.1, gamma=0.999, epsilon=0.05):
     # Initialize S (for now, always start from (0,0))
     Q = initialize_action_values(env, states, actions)
-    # print('initial Q: ',Q)
+    intervals = []
     # Learning
     for _ in range(num_episodes):
+        start_time = time()
         current_obs = env.reset()
         current_obs = tuple(current_obs)
         done = False
@@ -75,7 +73,11 @@ def q_learn(env, states, actions, num_episodes=80, step_size=0.1, gamma=0.999, e
             next_action, next_value = max(Q[next_obs].items(), key = lambda pair:pair[1])
             Q[current_obs][current_action] += step_size*(reward + gamma*next_value - Q[current_obs][current_action])
             current_obs = next_obs
+        intervals.append(time() - start_time)
+        print(intervals)
         print("Training episode ", _, " complete")
+
+    print("Average time per episode", sum(intervals)/len(intervals))
 
     # Defining optimal policy
     optimal_policy = {state: max(Q[state].items(), key=lambda pair: pair[1])[0] for state in Q}
@@ -86,7 +88,7 @@ def q_learn(env, states, actions, num_episodes=80, step_size=0.1, gamma=0.999, e
 if __name__ == '__main__':
     states, actions = all_states(maze_width, maze_height), all_actions()
     policy = q_learn(env, states, actions)
-    test_trials = 200
+    test_trials = 100
     for i_episode in range(test_trials):
         observation = env.reset()
         for t in range(100):
